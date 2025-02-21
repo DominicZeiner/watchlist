@@ -1,7 +1,6 @@
 package com.example.watch_list.service;
 
 import com.example.watch_list.model.entities.MovieEntity;
-import com.example.watch_list.model.mapper.MovieMapper;
 import com.example.watch_list.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

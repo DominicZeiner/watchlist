@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
+</head>
+<body>
+
+<h1>Statistics</h1>
+<div th:insert="~{parts/navbar :: navbar}"></div>
+
+<h2>Overview</h2>
+<table id="statsTable" class="display">
+    <thead>
+    <tr>
+        <th>Statistic</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Total Time Spent (Minutes)</td>
+        <td id="timeSpent">Loading...</td>
+    </tr>
+    <tr>
+        <td>Time Spent on Movies</td>
+        <td id="timeSpentOnMovies">Loading...</td>
+    </tr>
+    <tr>
+        <td>Time Spent on Shows</td>
+        <td id="timeSpentOnShows">Loading...</td>
+    </tr>
+    <tr>
+        <td>Average IMDb Rating</td>
+        <td id="averageImdbRating">Loading...</td>
+    </tr>
+    <tr>
+        <td>Average Given Rating</td>
+        <td id="averageGivenRating">Loading...</td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- DataTables JS -->
+<script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<!-- Custom JS -->
+<script>
+    $(document).ready(function () {
+        $('#statsTable').DataTable();
+
+        function fetchStatistic(endpoint, elementId) {
+            $.get(endpoint, function (data) {
+                $("#" + elementId).text(data);
+            });
+        }
+
+        fetchStatistic("/api/statistics/timeSpent", "timeSpent");
+        fetchStatistic("/api/statistics/timeSpentOnMovies", "timeSpentOnMovies");
+        fetchStatistic("/api/statistics/timeSpentOnShows", "timeSpentOnShows");
+        fetchStatistic("/api/statistics/averageImdbRating", "averageImdbRating");
+        fetchStatistic("/api/statistics/averageGivenRating", "averageGivenRating");
+
+    });
+</script>
+
+</body>
+</html>

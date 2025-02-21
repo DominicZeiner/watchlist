@@ -26,15 +26,9 @@ public class MovieController {
         return movieService.getMovieByImdbId(imdbId);
     }
 
-    @PostMapping
-    public MovieEntity addMovie(@RequestBody MovieEntity movieEntity) {
-        return movieService.saveMovie(movieEntity);
-    }
 
-    @DeleteMapping("/{imdbId}")
-    public void deleteMovie(@PathVariable String imdbId) {
-        movieService.deleteMovie(imdbId);
-    }
+
+
 
 
 }
