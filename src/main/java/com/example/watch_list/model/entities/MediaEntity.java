@@ -1,26 +1,37 @@
 package com.example.watch_list.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class MediaEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String imdbId;
+    @NotBlank
+    @NotNull
     private String title;
     private String genre;
+    @Min(0)
+    @Min(10)
     private Double imdbRating;
+    @Min(0)
     private Integer runtime;
+    private final LocalDateTime createdAt = LocalDateTime.now();
+
 
     public MediaEntity() {
     }
 
     public MediaEntity(String imdbId, String title, String genre, Double imdbRating, Integer runtime) {
-        this.id = UUID.randomUUID();
         this.imdbId = imdbId;
         this.title = title;
         this.genre = genre;
@@ -35,6 +46,8 @@ public abstract class MediaEntity {
     public void setId(UUID id) {
         this.id = id;
     }
+
+
 
     public String getImdbId() {
         return imdbId;

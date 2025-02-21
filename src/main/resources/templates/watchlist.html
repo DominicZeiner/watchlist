@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Watchlist</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css" rel="stylesheet">
+</head>
+<body>
+<h1>My Watchlist</h1>
+<div th:insert="~{parts/navbar :: navbar}"></div>
+
+<h2>Watchlist Items</h2>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addToWatchlistModal">Add Media to Watchlist</button>
+<table id="watchlistTable" class="display">
+    <thead>
+    <tr>
+        <th>IMDB ID</th>
+        <th>Title</th>
+        <th>imdbRating</th>
+        <th>Runtime</th>
+        <th>Status</th>
+        <th>Date Watched</th>
+        <th>Episodes Watched</th>
+        <th>Notes</th>
+        <th>Favorite</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div class="modal fade" id="addToWatchlistModal" tabindex="-1" role="dialog" aria-labelledby="addToWatchlistModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToWatchlistModalLabel">Add Media to Watchlist</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addToWatchlistForm">
+                    <div class="form-group">
+                        <label for="imdbId">IMDB ID</label>
+                        <select class="form-control" id="imdbId" name="imdbId" required>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- DataTables JS -->
+<script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<!-- Custom JS -->
+<script src="/js/watchlist.js"></script>
+
+</body>
+</html>
