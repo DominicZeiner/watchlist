@@ -7,7 +7,45 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         addToWatchlist();
     });
+
+    $('#updateWatchlistOwnRatingForm').on('submit', function(event) { // Fix here
+        event.preventDefault();
+        updateWatchlistOwnRating();
+    });
+
+    $('#watchlistTable tbody').on('click', 'td:nth-child(4)', function() {
+        var rowData = table.row(this).data();
+        document.getElementById('imdbIdUpdateModal').value = rowData[0]; // Set the imdbId
+        $('#updateWatchlistOwnRatingModal').modal('show'); // Show the modal
+    });
 });
+
+function updateWatchlistOwnRating() {
+    console.log('Updating watchlist own rating');
+    const imdbId = document.getElementById('imdbIdUpdateModal').value;
+    const ownRating = document.getElementById('ownRatingUpdateModal').value;
+
+    fetch(`/api/watchlist/${imdbId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rating: parseFloat(ownRating) }) // Fix here
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to update rating');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            $('#updateWatchlistOwnRatingModal').modal('hide'); // Fix here
+            fetchWatchlistData();
+        })
+        .catch(error => console.error('Error updating watchlist:', error));
+}
+
 
 function fetchWatchlistData() {
     fetch('/api/watchlist')
@@ -20,12 +58,14 @@ function fetchWatchlistData() {
                     item.imdbId,
                     item.title,
                     item.imdbRating,
+                    item.ownRating,
                     item.runtime,
                     item.status,
                     item.dateWatched,
                     item.episodesWatched,
                     item.notes,
-                    item.isFavorite ? 'Yes' : 'No'
+                    item.isFavorite ? 'Yes' : 'No',
+                    item.type
                 ]).draw();
             });
         })

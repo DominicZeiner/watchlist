@@ -1,11 +1,9 @@
 package com.example.watch_list.web;
 
 import com.example.watch_list.exceptions.MediaNotFoundException;
+import com.example.watch_list.exceptions.WatchlistNotFoundException;
 import com.example.watch_list.exceptions.WatchlistEntryAlreadyExistsException;
-import com.example.watch_list.model.entries.AvailableMedia;
-import com.example.watch_list.model.entries.CreateWatchlist;
-import com.example.watch_list.model.entries.GetWatchListWithMedia;
-import com.example.watch_list.model.entries.WatchListEntry;
+import com.example.watch_list.model.entries.*;
 import com.example.watch_list.service.WatchlistService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +22,12 @@ public class WatchlistController {
 
 
     @PostMapping
-    public WatchListEntry createWatchlistEntry(@RequestBody CreateWatchlist createWatchlist) throws WatchlistEntryAlreadyExistsException, MediaNotFoundException {
+    public WatchlistEntry createWatchlistEntry(@RequestBody CreateWatchlist createWatchlist) throws WatchlistEntryAlreadyExistsException, MediaNotFoundException {
         return watchlistService.addWatchlistEntry(createWatchlist);
     }
 
-    @PutMapping("/{id}")
-    public WatchListEntry updateWatchlistEntry(@PathVariable UUID id, @RequestBody WatchListEntry watchListEntry) {
+    @PutMapping("/{imdbId}")
+    public WatchlistEntry updateWatchlistEntry(@PathVariable UUID imdbId, @RequestBody WatchlistEntry watchListEntry) {
         return null;
     }
 
@@ -39,12 +37,12 @@ public class WatchlistController {
     }
 
     @GetMapping("/favorites")
-    public List<WatchListEntry> getFavoriteEntries() {
+    public List<WatchlistEntry> getFavoriteEntries() {
         return watchlistService.getFavoriteEntries();
     }
 
     @GetMapping("/watched")
-    public List<WatchListEntry> getWatchedEntries() {
+    public List<WatchlistEntry> getWatchedEntries() {
         return watchlistService.getWatchedEntries();
     }
 
@@ -58,6 +56,10 @@ public class WatchlistController {
         return watchlistService.getImdbIdsNotInWatchlist();
     }
 
+    @PatchMapping("/{imdbId}")
+    public UpdateWatchlistRating updateWatchlistRating(@PathVariable String imdbId, @RequestBody UpdateWatchlistRating updateWatchlistRating) throws WatchlistNotFoundException, MediaNotFoundException {
+        return watchlistService.updateWatchlistRating(imdbId, updateWatchlistRating);
+    }
 
 
 

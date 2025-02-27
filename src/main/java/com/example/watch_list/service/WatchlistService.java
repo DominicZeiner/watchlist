@@ -2,15 +2,13 @@ package com.example.watch_list.service;
 
 
 import com.example.watch_list.exceptions.MediaNotFoundException;
+import com.example.watch_list.exceptions.WatchlistNotFoundException;
 import com.example.watch_list.exceptions.WatchlistEntryAlreadyExistsException;
 import com.example.watch_list.model.entities.MediaEntity;
 import com.example.watch_list.model.entities.MovieEntity;
 import com.example.watch_list.model.entities.WatchlistEntity;
 import com.example.watch_list.model.entities.WatchlistStatus;
-import com.example.watch_list.model.entries.AvailableMedia;
-import com.example.watch_list.model.entries.CreateWatchlist;
-import com.example.watch_list.model.entries.GetWatchListWithMedia;
-import com.example.watch_list.model.entries.WatchListEntry;
+import com.example.watch_list.model.entries.*;
 import com.example.watch_list.model.mapper.WatchlistMapper;
 import com.example.watch_list.repository.MediaRepository;
 import com.example.watch_list.repository.WatchlistRepository;
@@ -46,7 +44,7 @@ public class WatchlistService {
         return;
     }
 
-    public WatchListEntry addWatchlistEntry(CreateWatchlist createWatchlist) throws WatchlistEntryAlreadyExistsException, MediaNotFoundException {
+    public WatchlistEntry addWatchlistEntry(CreateWatchlist createWatchlist) throws WatchlistEntryAlreadyExistsException, MediaNotFoundException {
         Optional<MediaEntity> mediaEntity = mediaRepository.findByImdbId(createWatchlist.imdbId());
         if (mediaEntity.isEmpty()) {
             throw new MediaNotFoundException("Media with imdbId " + createWatchlist.imdbId() + " not found");
@@ -71,7 +69,7 @@ public class WatchlistService {
         return watchlistMapper.toWatchlistEntry(watchlistEntity);
     }
 
-    public List<WatchListEntry> getWatchlistEntries() {
+    public List<WatchlistEntry> getWatchlistEntries() {
         return null;
     }
 
@@ -93,7 +91,8 @@ public class WatchlistService {
                                     watchlistEntity.getEpisodesWatched(),
                                     watchlistEntity.getNotes(),
                                     watchlistEntity.isFavorite(),
-                                    mediaEntity instanceof MovieEntity ? "movie" : "show"
+                                    mediaEntity instanceof MovieEntity ? "movie" : "show",
+                                    watchlistEntity.getRating()
                             )
                     ).orElse(null);
                 })
@@ -102,13 +101,13 @@ public class WatchlistService {
     }
 
 
-    public List<WatchListEntry> getWatchedEntries() {
+    public List<WatchlistEntry> getWatchedEntries() {
         return watchlistRepository.findByStatus(WatchlistStatus.WATCHED).stream()
                 .map(watchlistMapper::toWatchlistEntry)
                 .collect(Collectors.toList());
     }
 
-    public List<WatchListEntry> getFavoriteEntries() {
+    public List<WatchlistEntry> getFavoriteEntries() {
         return watchlistRepository.findByIsFavorite(true).stream()
                 .map(watchlistMapper::toWatchlistEntry)
                 .collect(Collectors.toList());
@@ -123,5 +122,50 @@ public class WatchlistService {
                 .map(mediaEntity -> new AvailableMedia(mediaEntity.getImdbId(), mediaEntity.getTitle()))
                 .filter(availableMedia -> !imdbIdsInWatchlist.contains(availableMedia.imdbId()))
                 .toList();
+    }
+
+    public UpdateWatchlistRating updateWatchlistRating(String imdbId, UpdateWatchlistRating updateWatchlistRating) throws MediaNotFoundException, WatchlistNotFoundException {
+        Optional<MediaEntity> mediaEntity = mediaRepository.findByImdbId(imdbId);
+
+        if (mediaEntity.isEmpty()) {
+            throw new MediaNotFoundException("Media with imdbId " + imdbId + " not found");
+        }
+
+        Optional<WatchlistEntity> watchlistEntity = watchlistRepository.findByMediaEntityId(mediaEntity.get().getId());
+
+        if (watchlistEntity.isEmpty()) {
+            throw new WatchlistNotFoundException("Watchlist entry with imdbId " + imdbId + " not found");
+        }
+
+
+        watchlistEntity
+            .get()
+            .setRating(updateWatchlistRating.rating());
+        WatchlistEntity savedWatchlist = watchlistRepository.save(watchlistEntity.get());
+        return new UpdateWatchlistRating(savedWatchlist.getRating());
+    }
+
+    public GetWatchListWithMedia getWatchListWithMedia(String imdbId) throws WatchlistNotFoundException {
+        Optional<MediaEntity> mediaEntityOptional = mediaRepository.findByImdbId(imdbId);
+        if (mediaEntityOptional.isEmpty()) {
+            return null;
+        }
+
+        Optional<WatchlistEntity> watchlistEntityOptional = watchlistRepository.findByMediaEntityId(mediaEntityOptional.get().getId());
+        return watchlistEntityOptional.map(watchlistEntity -> new GetWatchListWithMedia(
+                mediaEntityOptional.get().getImdbId(),
+                mediaEntityOptional.get().getTitle(),
+                mediaEntityOptional.get().getImdbRating(),
+                mediaEntityOptional.get().getRuntime(),
+                watchlistEntity.getStatus(),
+                watchlistEntity.getDateWatched(),
+                watchlistEntity.getEpisodesWatched(),
+                watchlistEntity.getNotes(),
+                watchlistEntity.isFavorite(),
+                mediaEntityOptional.get() instanceof MovieEntity ? "movie" : "show",
+                watchlistEntity.getRating()
+        ))
+                .orElse(null);
+
     }
 }

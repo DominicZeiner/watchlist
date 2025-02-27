@@ -4,7 +4,7 @@ import com.example.watch_list.model.entities.WatchlistStatus;
 
 import java.time.LocalDate;
 
-public record WatchListEntry(
+public record WatchlistEntry(
         String imdbId,
         WatchlistStatus status,
         LocalDate dateWatched,

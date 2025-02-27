@@ -12,8 +12,7 @@ public record GetWatchListWithMedia (
         Integer episodesWatched,
         String notes,
         boolean isFavorite,
-        String type
-
-){
+        String type,
+        Double ownRating){
 
 }
